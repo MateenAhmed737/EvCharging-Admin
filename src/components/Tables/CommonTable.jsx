@@ -1,6 +1,14 @@
 import React, { useMemo } from "react";
 import Actions from "../Actions";
-import { country_image_base_url, image_base_url, ports_image_base_url, station_image_base_url, users_image_base_url } from "../../utils/url";
+import {
+  country_image_base_url,
+  image_base_url,
+  ports_image_base_url,
+  station_image_base_url,
+  users_image_base_url,
+} from "../../utils/url";
+import { useCopyToClipboard } from "@uidotdev/usehooks";
+import toast from "react-hot-toast";
 
 const CommonTable = ({
   state,
@@ -18,6 +26,7 @@ const CommonTable = ({
   excludeFields = [],
   checkboxEnabled = false,
 }) => {
+  const [, copyToClipboard] = useCopyToClipboard();
   const keys = Object.keys(template).filter((e) => !excludeFields.includes(e));
 
   const removeUnderscore = (str) =>
@@ -38,6 +47,17 @@ const CommonTable = ({
     }
   }, [props.title]);
 
+  const handleCopy = (params) => {
+    const { value, successMessage, errorMessage } = params;
+    try {
+      copyToClipboard(value);
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(errorMessage);
+      console.error("Failed to copy server url: ", error);
+      console.log("error?.code", error?.code);
+    }
+  };
   const handleSelectAll = (e) => {
     const isChecked = e.target.checked;
 
@@ -161,6 +181,25 @@ const CommonTable = ({
                         className="px-6 py-4 text-xs text-center whitespace-nowrap md:whitespace-normal"
                       >
                         ${Number(value).toFixed(2)}
+                      </td>
+                    ) : key === "charger_id" &&
+                      window.location.pathname.endsWith("/ports") &&
+                      value ? (
+                      <td
+                        key={tableCellKey}
+                        className="px-6 py-4 text-xs text-center whitespace-nowrap md:whitespace-normal"
+                      >
+                        <span
+                          onClick={() =>
+                            handleCopy({
+                              value,
+                              successMessage: "Charger ID copied!",
+                            })
+                          }
+                          className="cursor-pointer hover:text-primary-500 transition-all"
+                        >
+                          {value}
+                        </span>
                       </td>
                     ) : value !== null &&
                       value !== undefined &&

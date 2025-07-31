@@ -1,4 +1,5 @@
 export * from "./time";
+
 export const getInputType = (key) => {
   const str = key.toLowerCase();
 
@@ -43,7 +44,8 @@ export const getObjProperty = (obj, path = "") =>
   path
     .split(".")
     .reduce(
-      (acc, curr, indx) => (indx === 0 ? (acc = obj?.[curr]) : (acc = acc?.[curr])),
+      (acc, curr, indx) =>
+        indx === 0 ? (acc = obj?.[curr]) : (acc = acc?.[curr]),
       ""
     );
 
